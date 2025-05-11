@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>IP Tracker</h1>
+        <form id="ipForm">
+            <input type="text" name="ip" id="ip" placeholder="Masukkan IP Address" required>
+            <button type="submit">Lacak</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script>
+        const form = document.getElementById('ipForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const ip = document.getElementById('ip').value;
+            const response = await fetch('/lacak', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `ip=${ip}`
+            });
+            const result = await response.json();
+            const resultDiv = document.getElementById('result');
+            if (result.error) {
+                resultDiv.innerHTML = `<p style="color: red;">${result.error}</p>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <p><strong>IP Address:</strong> ${result.query}</p>
+                    <p><strong>Country:</strong> ${result.country}</p>
+                    <p><strong>Region:</strong> ${result.regionName}</p>
+                    <p><strong>City:</strong> ${result.city}</p>
+                    <p><strong>ZIP:</strong> ${result.zip}</p>
+                    <p><strong>Latitude:</strong> ${result.lat}</p>
+                    <p><strong>Longitude:</strong> ${result.lon}</p>
+                    <p><strong>ISP:</strong> ${result.isp}</p>
+                    <p><a href="${result.google_maps_link}" target="_blank">Lihat di Google Maps</a></p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
